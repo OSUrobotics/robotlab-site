@@ -1,0 +1,73 @@
+{% extends "citation_manager/base.html" %}
+{% load citation_tags %}
+{% block title %}{{ pub.title }}{% endblock %}
+{% block content %}
+<h1>{{ pub.title }}</h1>
+<div id="export_bar">Export: [<a href="{% url 'bibtex' pub.key %}">bibtex</a>]</div>
+<div>
+{{ pub.abstract|linebreaks }}
+</div>
+<div>
+<table class="paper-detail">
+<tr>
+	<td>Authors</td>
+	<td>
+		<ul>
+		{% for author in pub.authors.all %}
+		<li>{{ author.published_name|author_links|safe }}</li>
+		{% endfor %}
+		</ul>
+	</td>
+</tr>
+{% if pub.conference %}
+<tr>
+	<td>Conference</td>
+	<td>{{ pub.conference }}</td>
+</tr>
+{% elif pub.journal %}
+<tr>
+	<td>Journal</td>
+	<td>{{ pub.journal }}</td>
+</tr>
+{% endif %}
+<tr>
+	<td>Year</td>
+	<td>{{ pub.year }}</td>
+</tr>
+<tr>
+	<td>Pages</td>
+	<td>{{ pub.pages }}</td>
+</tr>
+<tr>
+	<td>DOI</td>
+	<td>{{ pub.doi|urlize }}</td>
+</tr>
+{% if projects %}
+<tr>
+	<td>Related Projects</td>
+	<td>
+		<ul>
+		{% for project in projects %}
+			<li><a href="{% url 'group' project.pk %}">{{ project.name }}</a></li>
+		{% endfor %}
+		</ul>
+
+	</td>
+</tr>
+{% endif %}
+{% if labs %}
+<tr>
+<td>Related Research Groups</td>
+<td>
+	<ul>
+	{% for lab in labs %}
+		<li><a href="{% url 'group' lab.pk %}">{{ lab.name }}</a></li>
+	{% endfor %}
+	</ul>
+</td>
+</tr>
+{% endif %}
+
+</table>
+</div>
+{% endblock %}

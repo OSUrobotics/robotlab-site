@@ -1,0 +1,6 @@
+{% load citation_tags %}
+<ul class="citation-list">
+	{% for pub in pubs %}
+	<li><span class="number">[<a href="{% url 'publication' pub.key %}">{{ forloop.counter }}</a>]</span> {{ pub.html|safe|author_links }}</li>
+	{% endfor %}
+</ul>

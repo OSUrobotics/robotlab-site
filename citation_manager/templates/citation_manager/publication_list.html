@@ -1,0 +1,6 @@
+{% extends "citation_manager/base.html" %}
+{% load citation_tags %}
+{% block title %}Publications{% endblock %}
+{% block content %}
+{% list_publications pubs %}
+{% endblock %}

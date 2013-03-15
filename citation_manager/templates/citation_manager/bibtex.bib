@@ -1,0 +1,5 @@
+@{{pub.type}}{ {{pub.key}},
+	author = { {{authors|join:" and "}} },
+	{% for field, val in fields.items %}{{field}} = { {{val}} },
+	{% endfor %}
+}

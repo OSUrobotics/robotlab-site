@@ -1,0 +1,31 @@
+ul.citation-list {
+	list-style-type: none;
+}
+ul.citation-list li span.number {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: default;
+}
+ul.citation-list li {
+    padding-left: 2em ;
+    text-indent: -2em ;
+}
+
+ul.citation-list {
+	padding-left:0;
+}
+
+table.paper-detail td {
+	padding: 0.1em;
+	vertical-align: top;
+}
+
+table.paper-detail td ul {
+	padding: 0;
+	margin: 0;
+	list-style-type: none;
+}
