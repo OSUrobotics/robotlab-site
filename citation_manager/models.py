@@ -59,7 +59,8 @@ class Publication(models.Model):
 	type		= models.CharField(max_length=255, choices=zip(bibtex_constants.entry_types, bibtex_constants.entry_types))
 	key			= models.CharField(max_length=255)
 	abstract	= models.TextField(null=True, blank=True)
-	groups		= models.ManyToManyField(Group)
+	groups		= models.ManyToManyField(Group, null=True, blank=True)
+	hidden		= models.BooleanField(default=False)
 
 	def __unicode__(self):
 		return self.title
@@ -71,7 +72,7 @@ class Publication(models.Model):
 			if k != 'pubauthor':
 				v = getattr(self, k)
 				if v:
-					fields[k] = v
+					fields[k] = unicode(v)
 		if self.conference:
 			fields['booktitle'] = self.conference
 		del fields['authors']
@@ -95,6 +96,7 @@ class Publication(models.Model):
 		return formatted_entries.next().text.render(ob)
 
 	class Meta:
+		unique_together = (('doi', 'title'))
 		app_label = 'citation_manager'
 
 class PubAuthor(models.Model):
