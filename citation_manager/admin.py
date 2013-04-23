@@ -1,6 +1,6 @@
 from django.contrib import admin
-from citation_manager.models import Author, Publication, GroupInfo, Group
-from django.contrib.auth.admin import GroupAdmin
+from citation_manager.models import Author, Publication, GroupInfo, Group, User
+from django.contrib.auth.admin import GroupAdmin, UserAdmin
 
 
 admin.site.register(Author)
@@ -15,5 +15,15 @@ class GroupInline(admin.StackedInline):
 class GroupAdmin(GroupAdmin):
 	inlines = (GroupInline,)
 
+class UserInline(admin.StackedInline):
+	model = Author
+	can_delete = True
+
+class UserAdmin(UserAdmin):
+	inlines = (UserInline,)
+
 admin.site.unregister(Group)
 admin.site.register(Group, GroupAdmin)
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
