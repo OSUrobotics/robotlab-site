@@ -1,0 +1,6 @@
+<ul>
+{% for author in person.author_set.all %}
+	<li>{{ author.published_name }} {% if author.dblp_id %}[<a href="{{ author.dblp_link }}">DBLP</a>]{% endif %} 
+	{% if author.google_scholar_id %}[<a href="http://scholar.google.com/citations?user={{ author.google_scholar_id }}">Google Scholar</a>]{% endif %}</li>
+{% endfor %}
+</ul>

@@ -1,10 +1,18 @@
-{% load cms_tags sekizai_tags %}
-<html>
+{% load cms_tags sekizai_tags staticfiles %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
-      {% render_block "css" %}
+	{% render_block "css" %}
+  	<link rel="stylesheet" type="text/css" href="{% static "css/citations.css" %}">
+	<link rel="stylesheet" type="text/css" href="{% static "css/base.css" %}">
+    {% block stylesheets %}{% endblock %}
+	{% block head %}{% endblock %}
+	<title>{% page_attribute "page_title" %}</title>
   </head>
   <body>
       {% cms_toolbar %}
+      <h1>{% page_attribute "page_title" %}</h1>
       {% placeholder base_content %}
       {% block base_content %}{% endblock %}
       {% render_block "js" %}

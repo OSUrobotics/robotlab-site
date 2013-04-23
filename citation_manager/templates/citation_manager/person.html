@@ -2,26 +2,14 @@
 {% load citation_tags %}
 {% block title %}{{ person.get_full_name }}{% endblock %}
 {% block content %}
+{% if request.user == person %}
+Edit this page
+{% endif %}
 <h1>{{ person.get_full_name }}</h1>
-<h2>Links</h2>
-<ul>
-	<li><a href="http://www.dblp.org/db/indices/a-tree/s/Smart:William_D=.html">DBLP</a></li>
-</ul>
-
-
 <h2>Published as</h2>
-<ul>
-{% for author in person.author_set.all %}
-	<li>{{ author.published_name }} {% if author.dblp_id %}[<a href="{{ author.dblp_link }}">DBLP</a>]{% endif %}</li>
-{% endfor %}
-</ul>
+{% include "citation_manager/includes/published_as.html" %}
 <h2>Projects</h2>
-<ul>
-{% for project in projects %}
-	<li><a href="{% url 'group' project.pk %}">{{ project.name }}</a></li>
-{% endfor %}
-</ul>
-
+{% include "citation_manager/includes/group_membership.html" with groups=projects %}
 <h2>Publications</h2>
 {% list_publications pubs %}
 {% endblock %}
