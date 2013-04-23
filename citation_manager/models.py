@@ -7,8 +7,13 @@ from pybtex.plugin import find_plugin
 
 import bibtex_constants
 
+from cms.models import CMSPlugin
 
-# Create your models here.
+class Video(models.Model):
+	embed_url = models.URLField()
+	class Meta:
+		app_label = 'citation_manager'
+
 class Author(models.Model):
 	user_id = models.ForeignKey(User, null=True, blank=True)
 	google_scholar_id = models.CharField(max_length=12, null=True, blank=True)
@@ -45,22 +50,23 @@ class Author(models.Model):
 class Publication(models.Model):
 	dblp_id		= models.IntegerField(null=True, blank=True)
 	title		= models.TextField()
-	doi			= models.URLField(null=True, blank=True)
+	doi			= models.URLField(null=True,blank=True)
 	authors		= models.ManyToManyField(Author, through='PubAuthor')
-	venue		= models.CharField(max_length=255, null=True, blank=True)
-	venue_url	= models.CharField(max_length=255, null=True, blank=True)
+	venue		= models.CharField(null=True,max_length=255, blank=True)
+	venue_url	= models.CharField(null=True,max_length=255, blank=True)
 	# venue_type	= models.TextField() # FIXME!
-	pages		= models.CharField(max_length=20 , null=True, blank=True)
-	conference	= models.CharField(max_length=255, null=True, blank=True)
-	journal		= models.CharField(max_length=255, null=True, blank=True)
+	pages		= models.CharField(null=True,max_length=20 , blank=True)
+	conference	= models.CharField(null=True,max_length=255, blank=True)
+	journal		= models.CharField(null=True,max_length=255, blank=True)
 	number		= models.IntegerField(null=True, blank=True)
-	volume		= models.CharField(max_length=255, null=True, blank=True)
+	volume		= models.CharField(null=True,max_length=255, blank=True)
 	year		= models.IntegerField(null=True, blank=True)
 	type		= models.CharField(max_length=255, choices=zip(bibtex_constants.entry_types, bibtex_constants.entry_types))
 	key			= models.CharField(max_length=255)
-	abstract	= models.TextField(null=True, blank=True)
+	abstract	= models.TextField(null=True,blank=True)
 	groups		= models.ManyToManyField(Group, null=True, blank=True)
 	hidden		= models.BooleanField(default=False)
+	videos      = models.ManyToManyField(Video, null=True, blank=True)
 
 	def __unicode__(self):
 		return self.title
@@ -86,14 +92,20 @@ class Publication(models.Model):
 		entry.key = self.key
 		return entry
 
-	def html(self):
-		output_backend = find_plugin('pybtex.backends', 'html')
+	def export(self, backend):
+		output_backend = find_plugin('pybtex.backends', backend)
 		style_cls = find_plugin('pybtex.style.formatting', 'plain')
 		style = style_cls()
 		formatted_entries = style.format_entries([self.to_pybtex()])
 		# formatted_bibliography = FormattedBibliography([e for e in formatted_entries], style)
 		ob = output_backend(None)
 		return formatted_entries.next().text.render(ob)
+
+	def html(self):
+		return self.export('html')
+
+	def plaintext(self):
+		return self.export('plaintext')
 
 	class Meta:
 		unique_together = (('doi', 'title'))
@@ -119,8 +131,37 @@ class GroupInfo(models.Model):
 		('project','project'),
 	]))
 	description = models.TextField(null=True, blank=True)
+	videos      = models.ManyToManyField(Video, null=True, blank=True)
 
 	class Meta:
 		app_label = 'citation_manager'
 
+class PublicationPlugin(CMSPlugin):
+	user  = models.ForeignKey(User, related_name='pub_plugin', null=True, blank=True)
+	group = models.ForeignKey(Group, related_name='pub_plugin', null=True, blank=True)
 
+	def get_pubs(self):
+		owner = self.user and self.user or self.group
+		if type(owner) == User:
+			return Publication.objects.filter(authors__user_id=owner, hidden=False).order_by('-year')
+		elif type(owner) == Group:
+			return owner.publication_set.order_by('-year')
+
+	def __unicode__(self):
+		return u'Publications'
+
+class GroupMembershipPlugin(CMSPlugin):
+	type  = models.CharField(max_length=255, choices=([
+		('lab','lab'),
+		('project','project'),
+	]))
+	person = models.ForeignKey(User, related_name='plugins')
+
+	def __unicode__(self):
+		return u'Groups'
+
+class PublishedAsPlugin(CMSPlugin):
+	person = models.ForeignKey(User, related_name='pub_as_plugin', null=True, blank=True)
+
+	def __unicode__(self):
+		return u'PublishedAs: ' + self.person.get_full_name()
