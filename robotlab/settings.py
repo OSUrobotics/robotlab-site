@@ -157,16 +157,21 @@ INSTALLED_APPS = (
     'menus',
     'south',
     'sekizai',
-
+    'cms.plugins.text',
+    'cms.plugins.video',
+    'cms.plugins.link',
+    'cms.plugins.file',
+    'cms.plugins.picture',
+    'cms.plugins.teaser',
 )
 
 CMS_TEMPLATES = (
     ('template_1.html', 'Template One'),
-    ('template_2.html', 'Template Two'),
+    ('person_page_cms.html', 'Person Page'),
 )
 
 LANGUAGES = [
-    ('en', 'English'),
+    ('en-us', 'English'),
 ]
 
 
